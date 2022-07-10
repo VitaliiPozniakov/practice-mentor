@@ -1,0 +1,44 @@
+#root {
+  display: flex;
+  height: 100vh;
+}
+
+.div-left {
+  background-color: antiquewhite;
+  width: 40%;
+  height: 100%;
+  padding: 20px;
+}
+
+.div-right {
+  background-color: aquamarine;
+  width: 40%;
+  height: 100%;
+}
+
+.title-left {
+  font-size: 15px;
+  color: rebeccapurple;
+}
+
+.list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.item {
+  display: flex;
+
+}
+
+.title {
+  margin-right: auto;
+}
+
+.edit {
+  margin-right: 15px;
+}
+
+.btn {
+  height: fit-content;
+}
