@@ -39,12 +39,9 @@ const books = [
   },
 ];
 
-
-
-if (JSON.parse(localStorage.getItem('books')) === null ) {
+if (JSON.parse(localStorage.getItem("books")) === null) {
   localStorage.setItem("books", JSON.stringify(books));
-} 
-
+}
 
 // const choosedBook = null
 
@@ -52,9 +49,6 @@ const rootEl = document.querySelector("#root");
 
 const leftDiv = document.createElement("div");
 const rightDiv = document.createElement("div");
-
-
-
 
 rootEl.append(leftDiv, rightDiv);
 
@@ -69,17 +63,16 @@ const leftList = document.createElement("ul");
 leftList.classList.add("list");
 const leftBtn = document.createElement("button");
 leftBtn.textContent = "Add";
-leftBtn.classList.add('btn-add')
-
+leftBtn.classList.add("btn-add");
 
 leftDiv.append(titleEl, leftList, leftBtn);
 
-const addBtnRef = document.querySelector('.btn-add')
+const addBtnRef = document.querySelector(".btn-add");
 
-
-addBtnRef.addEventListener('click', onBtnAddClick)
+addBtnRef.addEventListener("click", onBtnAddClick);
 
 function renderList() {
+  leftList.innerHTML = "";
   const parsedBooks = JSON.parse(localStorage.getItem("books"));
 
   const markup = parsedBooks
@@ -102,10 +95,7 @@ function renderList() {
   btnDeleteRef.forEach((item) =>
     item.addEventListener("click", onBtnDeleteClick)
   );
-}
-
-function onBtnEditClick() {
-  console.log("Edit");
+  
 }
 
 function onBtnDeleteClick(evt) {
@@ -121,24 +111,21 @@ function onBtnDeleteClick(evt) {
 
   renderList();
 
-if ( document.querySelector('[data-number]') !== null ) {
-  const previewId = document.querySelector('[data-number]').dataset.number 
-  if (evt.target.parentNode.id === previewId ){
-    rightDiv.innerHTML = ''
+  if (document.querySelector("[data-number]") !== null) {
+    const previewId = document.querySelector("[data-number]").dataset.number;
+    if (evt.target.parentNode.id === previewId) {
+      rightDiv.innerHTML = "";
+    }
   }
-}
-
-
-
 }
 
 renderList();
 
 function onClick(event) {
   rightDiv.innerHTML = "";
-
+  const books = JSON.parse(localStorage.getItem("books"));
+  // console.log(books)f
   const chooseBook = books.find((book) => {
-    
     return book.title === event.target.textContent;
   });
 
@@ -159,72 +146,97 @@ function renderPreviewMarkup(book) {
         `;
 }
 
-function createFormMarkup () {
-
+function createFormMarkup({ title, author, img, plot }) {
   return `
   <form>
   <label> Title
-  <input type='text' name='title' /> 
+  <input type='text' name='title' value='${title}' /> 
   </label>
   <label> Author
-  <input type='text' name='author' /> 
+  <input type='text' name='author' value='${author}' /> 
   </label>
   <label> Image
-  <input type='text' name='img' /> 
+  <input type='text' name='img' value='${img}'/> 
   </label>
   <label> Plot
-  <input type='text' name='plot' /> 
+  <input type='text' name='plot' value='${plot}'/> 
   </label>
   <button type='button' class='btn-save'>Save</button>
   </form>
-  `
+  `;
 }
 
-function onBtnAddClick (evt) {
+function onBtnEditClick(event) {
+  const books = JSON.parse(localStorage.getItem("books"));
+  // console.log(books)
+  const chooseBook = books.find((book) => {
+    return book.id === event.target.parentNode.id;
+  });
+  // console.log(chooseBook)
+
+  rightDiv.insertAdjacentHTML("beforeend", createFormMarkup(chooseBook));
+
+  fillObject(chooseBook);
+
+  const saveBtnRef = document.querySelector(".btn-save");
+  saveBtnRef.addEventListener("click", onSaveBtnClick);
+  function onSaveBtnClick(evt) {
+    const index = books.findIndex((book) => {
+      //    console.log(book.id)
+      // console.log(chooseBook.id);
+      return book.id === chooseBook.id;
+    });
+    books[index] = chooseBook;
+    localStorage.setItem("books", JSON.stringify(books));
+
+
+    renderList();
+    rightDiv.innerHTML = "";
+    rightDiv.insertAdjacentHTML("beforeend", renderPreviewMarkup(chooseBook));
+  }
+}
+
+function onBtnAddClick(evt) {
   const newBook = {
     id: `${Date.now()}`,
-  }
-  rightDiv.innerHTML = createFormMarkup()
-  fillObject (newBook)
+  };
+  rightDiv.innerHTML = createFormMarkup();
+  fillObject(newBook);
 
-  const saveBtnRef = document.querySelector('.btn-save')
-  saveBtnRef.addEventListener('click', onSaveBtnClick)
-  function onSaveBtnClick (evt) {
+  const saveBtnRef = document.querySelector(".btn-save");
+  saveBtnRef.addEventListener("click", onSaveBtnClick);
+  function onSaveBtnClick(evt) {
     // console.log(newBook)
-const books = JSON.parse(localStorage.getItem('books'))
+    const books = JSON.parse(localStorage.getItem("books"));
 
-const valuesOfBook = Object.values(newBook)
+    const valuesOfBook = Object.values(newBook);
 
+    if (valuesOfBook.length < 5) {
+      alert("please enter all fields");
+      return;
+    }
 
-if (valuesOfBook.length < 5) {
-  alert('please enter all fields')
-  return
-}
-// valuesOfBook.forEach(item=> if(item === ''))
+    books.push(newBook);
+    localStorage.setItem("books", JSON.stringify(books));
+    // console.log(leftList)
+    // console.log(renderList())
+    leftList.innerHTML = "";
+    renderList();
 
-books.push(newBook)
-localStorage.setItem('books', JSON.stringify(books))
-// console.log(leftList)
-// console.log(renderList())
-leftList.innerHTML = ''
-renderList()
-
-rightDiv.innerHTML = ''
-rightDiv.insertAdjacentHTML("beforeend", renderPreviewMarkup(newBook));
+    rightDiv.innerHTML = "";
+    rightDiv.insertAdjacentHTML("beforeend", renderPreviewMarkup(newBook));
 
     // localStorage.setItem('books', [... JSON.parse(localStorage.getItem('books')), newBook ] )
-  } 
+  }
 }
 
-function fillObject (book) {
-  const allInputs = document.querySelectorAll('input')
-allInputs.forEach(input=> input.addEventListener('change', onChangeHandler))
+function fillObject(book) {
+  const allInputs = document.querySelectorAll("input");
+  allInputs.forEach((input) =>
+    input.addEventListener("change", onChangeHandler)
+  );
 
-
-
-function onChangeHandler (evt) {
-
-book[evt.target.name] = evt.target.value
+  function onChangeHandler(evt) {
+    book[evt.target.name] = evt.target.value;
+  }
 }
-}
-
